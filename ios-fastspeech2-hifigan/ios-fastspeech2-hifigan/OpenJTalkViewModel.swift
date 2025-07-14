@@ -10,10 +10,11 @@ import AVFoundation
 import AVFAudio
 
 class OpenJTalkViewModel: NSObject, ObservableObject {
-    private let openJTalk = OpenJTalk()
+    private let openJTalk:OpenJTalk
     private var audioPlayer: AVAudioPlayer?
 
-    override init(){
+    init(openJTalk: OpenJTalk){
+        self.openJTalk = openJTalk
         super.init()
         
         do {
@@ -50,11 +51,11 @@ class OpenJTalkViewModel: NSObject, ObservableObject {
         }
     }
     
-    func extractPhoneme(text: String) -> String{
+    func extractPhoneme(text: String){
         print(">>>>> extractPhoneme called")
         let phonemes = openJTalk.extractPhonemes(fromText: text)
         print(">>>>> extractPhoneme completed: \(phonemes)")
-        return phonemes.joined(separator: ",")
+        //return phonemes.joined(separator: ",")
     }
     
     private func playAudio(from url: URL) {

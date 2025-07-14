@@ -157,10 +157,14 @@
 - (NSArray<NSString *> *)extractPhonemesFromText:(NSString *)text {
     NSMutableArray<NSString *> *phonemes = [NSMutableArray array];
 
-    char *mecab_buffer = (char *)calloc(2048, sizeof(char));
-    text2mecab(mecab_buffer, (char *)[text UTF8String]);
-    Mecab_analysis(&self->_mecab, mecab_buffer);
-    free(mecab_buffer);
+    char *mecab_buffer = NULL;
+    @try {
+        mecab_buffer = (char *)calloc(2048, sizeof(char));
+        text2mecab(mecab_buffer, (char *)[text UTF8String]);
+        Mecab_analysis(&self->_mecab, mecab_buffer);
+    } @finally {
+        if (mecab_buffer) free(mecab_buffer);
+    }
 
     mecab2njd(&self->_njd, Mecab_get_feature(&self->_mecab), Mecab_get_size(&self->_mecab));
     
