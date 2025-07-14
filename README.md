@@ -34,6 +34,16 @@ To improve naturalness, the mel-spectrogram output from FastSpeech2 is passed to
 
 ---
 
+### 📦 Dependencies
+
+This project relies on the following external libraries and tools:
+
+* **[OpenJTalkForiOS](https://github.com/yasuohasegawa/OpenJTalkForiOS)**
+  Used for extracting Japanese phonemes from input text.
+  Follow the installation instructions in the repo to integrate it into your Xcode project.
+
+---
+
 ### ⚠️ Device Compatibility
 
 * ❌ **Xcode Simulator is not supported.**
