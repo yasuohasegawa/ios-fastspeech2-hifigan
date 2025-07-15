@@ -37,6 +37,7 @@ class FastSpeech2HiFiGANViewModel: NSObject, ObservableObject, AVAudioPlayerDele
     init(openJTalk: OpenJTalk){
         self.openJTalk = openJTalk
         super.init()
+        clearCoreMLCaches();
         
         // japanese
         try! loadModels(lang: .japanese)
@@ -91,6 +92,19 @@ class FastSpeech2HiFiGANViewModel: NSObject, ObservableObject, AVAudioPlayerDele
             print("[CoreML DEBUG] \(#function): Loaded map successfully.")
         } catch {
             throw SynthesizerError.phonemeMapLoadingFailed
+        }
+    }
+    
+    func clearCoreMLCaches() {
+        let bundleIdentifier = Bundle.main.bundleIdentifier
+        let cachesURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let coreMLCacheURL = cachesURL.appendingPathComponent(bundleIdentifier!)
+        if FileManager.default.fileExists(atPath: coreMLCacheURL.path) {
+            do {
+                try FileManager.default.removeItem(at: coreMLCacheURL)
+            } catch {
+                print("Failed to clear Core ML cache: \(error)")
+            }
         }
     }
     
