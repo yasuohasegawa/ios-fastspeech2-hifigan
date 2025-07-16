@@ -9,6 +9,7 @@ import Foundation
 import AVFoundation
 import AVFAudio
 import CoreML
+import Metal
 
 enum SynthesizerError: Error {
     case modelLoadingFailed(String)
@@ -38,23 +39,36 @@ class FastSpeech2HiFiGANViewModel: NSObject, ObservableObject, AVAudioPlayerDele
         self.openJTalk = openJTalk
         super.init()
         clearCoreMLCaches();
+                
+        let config = MLModelConfiguration()
+        config.computeUnits = isHighPerformanceGpu() ? .all : .cpuAndGPU
+        
+        let vocoderConfig = MLModelConfiguration()
+        vocoderConfig.computeUnits = .cpuAndGPU
         
         // japanese
-        try! loadModels(lang: .japanese)
+        try! loadModels(lang: .japanese, config:config, vocoderConfig:vocoderConfig)
         try! loadPhonemeMaps(lang: .japanese)
         
         // english
-        try! loadModels(lang: .english)
+        try! loadModels(lang: .english, config:config, vocoderConfig:vocoderConfig)
         try! loadPhonemeMaps(lang: .english)
     }
     
-    func loadModels(lang:VoiceLanguage) throws {
+    func isHighPerformanceGpu() -> Bool {
+        guard let device = MTLCreateSystemDefaultDevice() else {
+            return false
+        }
+
+        if #available(iOS 14.0, *) {
+            return device.supportsFamily(.apple7) // M1, A14 Bionic and newer
+        }
+        
+        return false
+    }
+    
+    func loadModels(lang:VoiceLanguage, config:MLModelConfiguration, vocoderConfig:MLModelConfiguration) throws {
         do {
-            let config = MLModelConfiguration()
-            config.computeUnits = .all
-            
-            let vocoderConfig = MLModelConfiguration()
-            vocoderConfig.computeUnits = .cpuAndGPU
             
             var encoder:MLModel? = nil
             var decoder:MLModel? = nil

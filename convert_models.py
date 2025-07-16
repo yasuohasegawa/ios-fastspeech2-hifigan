@@ -78,7 +78,8 @@ encoder_mlmodel = ct.convert(
         ct.TensorType(name="pitch_predictions"),
         ct.TensorType(name="energy_predictions"),
     ],
-    compute_units=ct.ComputeUnit.CPU_AND_NE,
+    compute_units=ct.ComputeUnit.ALL,
+    compute_precision=ct.precision.FLOAT16,
 )
 encoder_mlmodel.save("FastSpeech2Encoder.mlpackage")
 print("✅ FastSpeech2Encoder.mlpackage saved successfully.")
@@ -142,7 +143,8 @@ decoder_mlmodel = ct.convert(
         ct.TensorType(name="expanded_energy", shape=[1, ct.RangeDim(10, 5000)], dtype=np.float32),
     ],
     outputs=[ct.TensorType(name="mel_spectrogram")],
-    compute_units=ct.ComputeUnit.CPU_AND_NE,
+    compute_units=ct.ComputeUnit.ALL,
+    compute_precision=ct.precision.FLOAT16,
 )
 decoder_mlmodel.save("FastSpeech2Decoder.mlpackage")
 print("✅ FastSpeech2Decoder.mlpackage saved successfully.")
@@ -170,6 +172,7 @@ hifigan_mlmodel = ct.convert(
     inputs=[ct.TensorType(name="mel_spectrogram", shape=[1, 80, ct.RangeDim(10, 5000)], dtype=np.float32)],
     outputs=[ct.TensorType(name="waveform")],
     compute_units=ct.ComputeUnit.CPU_ONLY,
+    compute_precision=ct.precision.FLOAT16,
 )
 hifigan_mlmodel.save("HiFiGAN.mlpackage")
 print("✅ HiFiGAN.mlpackage saved successfully.")
